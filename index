@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🇯🇵 Japan 2026 Holiday Planner</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f9fafb;color:#111;font-size:14px}
+.header{background:#dc2626;color:#fff;padding:16px;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:700}
+.header p{font-size:12px;opacity:.85;margin-top:2px}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e5e7eb;overflow-x:auto;position:sticky;top:64px;z-index:99}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 12px;font-size:11px;font-weight:600;color:#6b7280;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:#dc2626;border-bottom-color:#dc2626}
+.content{padding:12px;display:none}
+.content.active{display:block}
+.card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff}
+.badge.osaka{background:#f97316}.badge.kobe{background:#a855f7}.badge.kochi{background:#22c55e}.badge.tokyo{background:#3b82f6}
+.card.osaka{border-color:#fb923c;background:#fff7ed}
+.card.kobe{border-color:#c084fc;background:#faf5ff}
+.card.kochi{border-color:#4ade80;background:#f0fdf4}
+.card.tokyo{border-color:#60a5fa;background:#eff6ff}
+.flight-card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:14px;margin-bottom:10px}
+.flight-num{color:#dc2626;font-weight:700;font-size:14px}
+.confirmed{background:#dcfce7;color:#15803d;font-size:10px;padding:2px 8px;border-radius:999px;font-weight:600;margin-left:8px}
+.times{display:flex;gap:16px;margin:8px 0}
+.time-block{text-align:left}
+.time-label{font-size:10px;color:#9ca3af}
+.time-val{font-weight:700;font-size:15px}
+.note-box{background:#f9fafb;border-radius:8px;padding:8px 12px;font-size:11px;color:#6b7280;margin-top:6px}
+.warn{background:#fefce8;border:1px solid #fde047;border-radius:10px;padding:10px 12px;font-size:11px;color:#854d0e;margin-top:8px}
+.info{background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:10px 12px;font-size:11px;color:#1e40af;margin-bottom:10px}
+.filter-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.filter-row::-webkit-scrollbar{display:none}
+.filter-btn{flex-shrink:0;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer}
+.filter-btn.active{background:#dc2626;color:#fff;border-color:#dc2626}
+.day-list{display:flex;gap:6px;overflow-x:auto;margin-bottom:10px;padding-bottom:4px}
+.day-list::-webkit-scrollbar{display:none}
+.day-btn{flex-shrink:0;padding:8px 12px;border-radius:10px;border:2px solid #e5e7eb;background:#fff;text-align:left;cursor:pointer;min-width:90px}
+.day-btn.active.osaka{border-color:#fb923c;background:#fff7ed}
+.day-btn.active.kobe{border-color:#c084fc;background:#faf5ff}
+.day-btn.active.kochi{border-color:#4ade80;background:#f0fdf4}
+.day-btn.active.tokyo{border-color:#60a5fa;background:#eff6ff}
+.day-btn .day-name{font-size:10px;font-weight:700;color:#111}
+.day-btn .day-city{font-size:10px;color:#9ca3af;margin-top:2px}
+.day-btn.active.osaka .day-city{color:#c2410c}
+.day-btn.active.kobe .day-city{color:#7e22ce}
+.day-btn.active.kochi .day-city{color:#15803d}
+.day-btn.active.tokyo .day-city{color:#1d4ed8}
+.detail-card{border-radius:12px;border:2px solid #e5e7eb;padding:14px;background:#f9fafb}
+.detail-card.osaka{border-color:#fb923c;background:#fff7ed}
+.detail-card.kobe{border-color:#c084fc;background:#faf5ff}
+.detail-card.kochi{border-color:#4ade80;background:#f0fdf4}
+.detail-card.tokyo{border-color:#60a5fa;background:#eff6ff}
+.activity-row{display:flex;align-items:center;gap:8px;background:#fff;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px}
+.move-btns{display:flex;flex-direction:column;gap:1px}
+.move-btn{background:none;border:none;color:#9ca3af;cursor:pointer;font-size:10px;padding:0 2px;line-height:1}
+.move-btn:disabled{color:#e5e7eb}
+.del-btn{background:none;border:none;color:#f87171;cursor:pointer;font-size:12px;margin-left:auto;flex-shrink:0}
+.input-row{display:flex;gap:6px;margin-top:8px}
+input,select,textarea{border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;font-size:12px;width:100%;background:#fff;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#dc2626}
+textarea{resize:none}
+.btn{border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-red{background:#dc2626;color:#fff}
+.btn-white{background:#fff;border:1px solid #d1d5db;color:#374151}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:8px;border:1px solid #d1d5db;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-maps{background:#fff;color:#374151}
+.btn-dir{background:#dc2626;color:#fff;border-color:#dc2626}
+.section-label{font-size:11px;font-weight:700;color:#374151;margin-bottom:6px;margin-top:2px}
+.summary-row{display:flex;gap:8px;margin-bottom:12px}
+.summary-card{flex:1;background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:10px;text-align:center}
+.summary-card .s-label{font-size:10px;color:#9ca3af;margin-bottom:4px}
+.summary-card .s-val{font-size:16px;font-weight:700}
+.budget-table{background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:10px}
+.budget-header{display:grid;grid-template-columns:5fr 3fr 3fr 1fr;font-size:10px;font-weight:700;color:#9ca3af;padding:8px 12px;background:#f9fafb;border-bottom:1px solid #e5e7eb}
+.budget-row{display:grid;grid-template-columns:5fr 3fr 3fr 1fr;align-items:center;padding:8px 12px;border-bottom:1px solid #f3f4f6}
+.budget-row:last-child{border-bottom:none}
+.budget-row input{text-align:right;padding:4px 6px;font-size:11px}
+.pack-group{background:#fff;border-radius:12px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:8px}
+.pack-header{background:#f9fafb;padding:8px 12px;font-size:11px;font-weight:700;color:#6b7280;border-bottom:1px solid #e5e7eb}
+.pack-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #f3f4f6}
+.pack-row:last-child{border-bottom:none}
+.pack-row input[type=checkbox]{width:16px;height:16px;accent-color:#dc2626;flex-shrink:0}
+.pack-label{flex:1;font-size:13px}
+.pack-label.done{text-decoration:line-through;color:#9ca3af}
+.progress-bar{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:8px 0}
+.progress-fill{height:100%;background:#dc2626;border-radius:999px;transition:width .3s}
+.mapcode-val{font-family:monospace;font-size:15px;font-weight:700;letter-spacing:.1em;color:#111}
+.save-row{display:flex;gap:8px;margin-top:12px}
+.save-status{font-size:11px;font-weight:700;color:#16a34a;text-align:center;margin-top:6px;min-height:16px}
+.hotel-input-group{margin-bottom:8px}
+.hotel-input-group label{font-size:11px;color:#6b7280;display:block;margin-bottom:3px}
+@media(min-width:640px){
+  .day-list{flex-direction:column;width:200px;overflow-y:auto;overflow-x:visible;max-height:60vh}
+  .itinerary-layout{display:flex;gap:12px;align-items:flex-start}
+  .itinerary-layout .day-list{flex-shrink:0}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🇯🇵 Japan 2026</h1>
+  <p>21 Oct – 5 Nov · Osaka · Kobe · Kochi · Tokyo · ANA DAZ49R</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('flights',this)">✈️ Flights</button>
+  <button class="tab" onclick="switchTab('hotels',this)">🏨 Hotels</button>
+  <button class="tab" onclick="switchTab('itinerary',this)">📅 Days</button>
+  <button class="tab" onclick="switchTab('map',this)">🗺️ Map</button>
+  <button class="tab" onclick="switchTab('codes',this)">📍 Codes</button>
+  <button class="tab" onclick="switchTab('tips',this)">💡 Tips</button>
+  <button class="tab" onclick="switchTab('expenses',this)">💴 Expenses</button>
+  <button class="tab" onclick="switchTab('packing',this)">🧳 Pack</button>
+</div>
+
+<div class="content active" id="tab-flights"></div>
+<div class="content" id="tab-hotels"></div>
+<div class="content" id="tab-itinerary"></div>
+<div class="content" id="tab-map"></div>
+<div class="content" id="tab-codes"></div>
+<div class="content" id="tab-tips"></div>
+<div class="content" id="tab-expenses"></div>
+<div class="content" id="tab-packing"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const FLIGHTS=[
+  {id:1,date:"Wed, 21 Oct",flight:"NH802",route:"Singapore (T2) → Tokyo Narita",dep:"06:15",arr:"14:30",cls:"Economy K",note:"ANA · Ref: DAZ49R · ⚠️ Only 3hrs transit — go straight to T1"},
+  {id:2,date:"Wed, 21 Oct",flight:"NH2177",route:"Tokyo Narita (T1) → Osaka Itami",dep:"17:35",arr:"18:55",cls:"Economy K",note:"Operated by ANA Wings · Collect luggage, head to hotel"},
+  {id:3,date:"Sun, 1 Nov",flight:"NH564",route:"Kochi → Tokyo Haneda",dep:"10:20",arr:"11:35",cls:"Economy K",note:"ANA · Ref: DAZ49R · Return car rental night before!"},
+  {id:4,date:"Thu, 5 Nov",flight:"NH801",route:"Tokyo Narita (T1) → Singapore",dep:"18:20",arr:"00:55+1",cls:"Economy K",note:"ANA · Ref: DAZ49R · Leave hotel by 15:00 for Narita"},
+];
+
+let hotels=[
+  {id:1,city:"Osaka",checkin:"21 Oct",checkout:"24 Oct",name:"",ref:"",note:"💡 Stay near Namba or Shinsaibashi. Check-in after ~19:30."},
+  {id:"1b",city:"Kobe",checkin:"24 Oct",checkout:"25 Oct",name:"",ref:"",note:"💡 Stay near Kitano or Sannomiya. Check out early for Kochi drive."},
+  {id:2,city:"Kochi",checkin:"25 Oct",checkout:"1 Nov",name:"",ref:"",note:"💡 Mountain guesthouse first night. Confirm late check-in. Return car 31 Oct night."},
+  {id:3,city:"Tokyo",checkin:"1 Nov",checkout:"5 Nov",name:"",ref:"",note:"💡 Stay Shinjuku or Shibuya. Check-out 5 Nov by 15:00 for Narita."},
+];
+
+let days=[
+  {date:"21 Oct",dow:"Wed",city:"Osaka",activities:["✈️ NH2177 arrives Osaka Itami ~18:55 — collect luggage & check in","🍜 Dotonbori street food walk — takoyaki, okonomiyaki, ramen","🌃 Evening stroll along Dotonbori canal"],notes:""},
+  {date:"22 Oct",dow:"Thu",city:"Osaka",activities:["🎋 Day trip to Arashiyama Bamboo Grove, Kyoto (~15 min from Osaka by train)","💡 Go at 6–7am — empty, beautiful light, no crowds","🍵 Tenryu-ji Garden next door — UNESCO listed, worth a stroll after"],notes:""},
+  {date:"23 Oct",dow:"Fri",city:"Osaka",activities:["🦌 Day trip to Nara Park — deer, Tōdai-ji Temple, Kasuga Taisha (~45 min)","💡 Go before 10am, buy shika senbei for the deer!"],notes:""},
+  {date:"24 Oct",dow:"Sat",city:"Kobe",activities:["🚗 Drive Osaka → Kobe (~45 min, car rental)","🥩 Kobe beef dinner — book restaurant in advance","🌃 Evening walk around Kitano Ijinkan district","🏨 Overnight in Kobe"],notes:""},
+  {date:"25 Oct",dow:"Sun",city:"Kochi",activities:["🚗 Drive Kobe → Kochi (~2.5 hrs via expressway)","🏔️ Check in to mountain guesthouse","🌄 Settle in — rest after long travel day"],notes:""},
+  {date:"26 Oct",dow:"Mon",city:"Kochi",activities:["🌊 Day trip to Naruto Whirlpools — Uzushio boat or Uzu-no-Michi glass walkway (~1.5 hrs)","💡 Check tide timetable at uzushio-navi.com for best viewing","🍜 Lunch in Naruto town"],notes:""},
+  {date:"27 Oct",dow:"Tue",city:"Kochi",activities:["🪨 Iya Valley — Kazurabashi vine bridge walk","🏕️ Explore Iya gorges — dramatic ravines and emerald river","💡 Wear non-slip shoes, go early before crowds"],notes:""},
+  {date:"28 Oct",dow:"Wed",city:"Kochi",activities:["🛶 White water rafting on Yoshino River","🏄 Paddle boarding on calmer stretches","💡 Book Happy Raft or Monbell in advance"],notes:""},
+  {date:"29 Oct",dow:"Thu",city:"Kochi",activities:["🧗 Canyoning — abseiling, jumps, natural water slides through the gorges","🛁 Onsen evening — well deserved after canyoning!","💡 Try Iya Onsen for a scenic hilltop soak"],notes:""},
+  {date:"30 Oct",dow:"Fri",city:"Kochi",activities:["🏯 Kochi Castle — one of Japan's 12 original castles","🛒 Hirome Ichiba market — try katsuo no tataki (seared bonito with garlic)","🏖️ Katsurahama Beach + Sakamoto Ryoma statue"],notes:""},
+  {date:"31 Oct",dow:"Sat",city:"Kochi",activities:["🛍️ Sunday Ichi-ba market — local produce & crafts on Otesuji street","🚗 Return car rental — drop off night before NH564 departs 10:20","💡 Confirm car return accepts after-hours drop-off"],notes:""},
+  {date:"1 Nov",dow:"Sun",city:"Tokyo",activities:["✈️ NH564 Kochi → Tokyo Haneda, DEP 10:20 ARR 11:35","🏨 Check in to Tokyo hotel","🗼 Evening: Shibuya crossing + dinner in Shinjuku"],notes:""},
+  {date:"2 Nov",dow:"Mon",city:"Tokyo",activities:["🍣 Tsukiji Outer Market breakfast — go early, best stalls sell out fast!","🗼 Senso-ji Temple, Asakusa — Tokyo's oldest temple","🛍️ Nakamise shopping street for souvenirs"],notes:""},
+  {date:"3 Nov",dow:"Tue",city:"Tokyo",activities:["🏙️ Shibuya Sky observation deck — book sunset slot online","🛍️ Harajuku & Takeshita Street — fashion, crepes, street culture","🍜 Shinjuku Omoide Yokocho (Memory Lane) — tiny yakitori stalls"],notes:""},
+  {date:"4 Nov",dow:"Wed",city:"Tokyo",activities:["🗼 Tokyo Skytree — book night slot for city lights","🛒 Akihabara — electronics, anime, gadgets","💡 Last souvenir run! Don Quijote Shinjuku open 24hrs"],notes:""},
+  {date:"5 Nov",dow:"Thu",city:"Tokyo",activities:["✈️ NH801 Tokyo Narita → Singapore DEP 18:20 ARR 00:55+1","🚅 Take Narita Express (N'EX) — leave hotel by 15:00","💡 Last chance for convenience store snacks & souvenirs!"],notes:""},
+];
+
+let selectedDay=0;
+
+let mapcodes=[
+  {id:1,name:"Guesthouse EN",code:"558 003 002",city:"Kochi",notes:"First night stay"},
+  {id:2,name:"Daniel's House",code:"181 780 090",city:"Kochi",notes:""},
+  {id:3,name:"Hirome Market Parking",code:"73 184 705",city:"Kochi",notes:"Park here for Hirome Ichiba"},
+  {id:4,name:"Agri Collecto",code:"73 217 768",city:"Kochi",notes:""},
+  {id:5,name:"Arumo 410 (hotel)",code:"181 737 439",city:"Kochi",notes:"Hotel"},
+  {id:6,name:"Niyodo Outdoor Center",code:"445 680 156",city:"Kochi",notes:"Rafting / outdoor activities base"},
+  {id:7,name:"Kōchi Airport",code:"73 171 276*86",city:"Kochi",notes:"Drop car & catch NH564 — DEP 10:20"},
+];
+
+const MAP_LOCS=[
+  {name:"Dotonbori",city:"Osaka",lat:34.6686,lng:135.5031,note:"Food walk — takoyaki, okonomiyaki, ramen"},
+  {name:"Arashiyama Bamboo Forest",city:"Osaka",lat:35.0168,lng:135.6713,note:"Go 6–7am for empty paths"},
+  {name:"Nara Park",city:"Osaka",lat:34.685,lng:135.843,note:"Deer park — buy shika senbei!"},
+  {name:"Suntory Yamazaki Distillery",city:"Osaka",lat:34.8925,lng:135.6745,note:"Book months ahead — lottery system"},
+  {name:"Kitano Ijinkan-Gai",city:"Kobe",lat:34.7007,lng:135.1908,note:"Evening stroll + Kobe beef dinner"},
+  {name:"Naruto Whirlpools",city:"Kochi",lat:34.2368,lng:134.648,note:"Check tide timetable first!"},
+  {name:"Iya Valley Vine Bridge",city:"Kochi",lat:33.8751,lng:133.8354,note:"¥550 entry — go early, non-slip shoes"},
+  {name:"Hirome Market",city:"Kochi",lat:33.5601,lng:133.5359,note:"Try katsuo no tataki with garlic"},
+  {name:"Kochi Castle",city:"Kochi",lat:33.5608,lng:133.5315,note:"One of Japan's 12 original castles"},
+  {name:"Katsurahama Beach",city:"Kochi",lat:33.4982,lng:133.5744,note:"No swimming — scenic views"},
+  {name:"Kōchi Airport",city:"Kochi",lat:33.5476,lng:133.674,note:"Map code: 73 171 276*86"},
+  {name:"Tsukiji Outer Market",city:"Tokyo",lat:35.6648,lng:139.7703,note:"Go early — best stalls sell out"},
+  {name:"Senso-ji Temple",city:"Tokyo",lat:35.7148,lng:139.7967,note:"Tokyo's oldest temple, Asakusa"},
+  {name:"Shibuya Crossing",city:"Tokyo",lat:35.6595,lng:139.7006,note:"World's busiest crossing"},
+  {name:"Harajuku",city:"Tokyo",lat:35.6702,lng:139.7028,note:"Fashion, crepes, Takeshita Street"},
+  {name:"Shinjuku",city:"Tokyo",lat:35.6938,lng:139.7034,note:"Omoide Yokocho + Don Quijote"},
+  {name:"Tokyo Skytree",city:"Tokyo",lat:35.7101,lng:139.8107,note:"Book night slot for city lights"},
+  {name:"Akihabara",city:"Tokyo",lat:35.7023,lng:139.7745,note:"Electronics, anime, gadgets"},
+];
+
+const TIPS=[
+  {city:"General",icon:"💴",tip:"Japan is very cash-heavy. Carry ¥20,000–30,000 daily. 7-Eleven ATMs reliably accept foreign cards."},
+  {city:"General",icon:"📶",tip:"Get a pocket WiFi or data SIM at Changi before departure. Much cheaper than buying in Japan."},
+  {city:"General",icon:"🚆",tip:"Get a Suica IC card at Narita on arrival — works on trains, buses, and convenience stores nationwide."},
+  {city:"General",icon:"🚗",tip:"Car rental: get an ETC card for expressway tolls. Request English GPS. Drive on the LEFT."},
+  {city:"General",icon:"👟",tip:"Expect 15,000–20,000 steps daily. Break in your walking shoes before the trip!"},
+  {city:"General",icon:"🌡️",tip:"Late Oct–Nov: 10–18°C. Pack layers. Kochi mountains colder at night."},
+  {city:"Osaka",icon:"🥃",tip:"Suntory Yamazaki Distillery sells out MONTHS in advance. Book at suntory.com/factory/yamazaki immediately."},
+  {city:"Osaka",icon:"🦌",tip:"Nara Park: Go before 10am. Buy shika senbei — deer will literally bow for them!"},
+  {city:"Osaka",icon:"🍜",tip:"Dotonbori is best at night. Must-try: takoyaki (Aizuya), okonomiyaki (Mizuno), kushikatsu (Daruma)."},
+  {city:"Osaka",icon:"🎫",tip:"Osaka Amazing Pass covers unlimited subway + 40+ attractions. Worth it for 2–3 full days."},
+  {city:"Kobe",icon:"🥩",tip:"Kobe beef restaurants: book ahead for dinner. Mouriya and Steakland are popular near Kitano."},
+  {city:"Kobe",icon:"🗺️",tip:"Kitano Ijinkan is free to walk around. Worth going inside 1–2 of the Western residences."},
+  {city:"Kochi",icon:"🌊",tip:"Naruto Whirlpools: check uzushio-navi.com for tide timetables. Best during spring/autumn tides."},
+  {city:"Kochi",icon:"🛶",tip:"White water rafting: book Happy Raft or Monbell on Yoshino River. October is peak season — book NOW."},
+  {city:"Kochi",icon:"🧗",tip:"Canyoning in Iya Valley: Iya Onsen and MiNaKa offer guided canyoning. Half or full-day options."},
+  {city:"Kochi",icon:"🪨",tip:"Kazurabashi vine bridge: ¥550 entry. Go early — crowded by 10am. Wear non-slip shoes."},
+  {city:"Kochi",icon:"🐟",tip:"Katsuo no tataki is Kochi's signature dish. Best at Hirome Ichiba — order with garlic and ponzu."},
+  {city:"Kochi",icon:"🏯",tip:"Kochi Castle is one of only 12 original castles in Japan. Free grounds, small fee for the keep."},
+  {city:"Kochi",icon:"🗓️",tip:"Sunday Ichi-ba market runs every Sunday on Otesuji street. 31 Oct is Saturday — check Saturday market."},
+  {city:"Tokyo",icon:"🎌",tip:"Get a 48hr or 72hr Tokyo Metro pass — unlimited subway rides, huge value for sightseeing days."},
+  {city:"Tokyo",icon:"🗼",tip:"Shibuya Sky or Tokyo Skytree — book online to skip queues. Sunset/night slots are best."},
+  {city:"Tokyo",icon:"🛍️",tip:"Akihabara for electronics, Harajuku for fashion, Tsukiji for the freshest sushi breakfast."},
+  {city:"Tokyo",icon:"🍣",tip:"Tsukiji outer market opens 5am. Go early before the best stalls sell out."},
+  {city:"Tokyo",icon:"🚅",tip:"Narita is 60–90 mins from central Tokyo. Take Narita Express (N'EX) — faster than buses."},
+];
+
+let budget=[
+  {id:1,cat:"✈️ Flights",item:"ANA return SIN–TYO–OSA / KCZ–TYO–SIN (DAZ49R)",est:1200,act:0},
+  {id:2,cat:"🏨 Accommodation",item:"Osaka hotel (3 nights)",est:600,act:0},
+  {id:3,cat:"🏨 Accommodation",item:"Kobe hotel (1 night)",est:200,act:0},
+  {id:4,cat:"🏨 Accommodation",item:"Kochi guesthouse + hotel (7 nights)",est:900,act:0},
+  {id:5,cat:"🏨 Accommodation",item:"Tokyo hotel (4 nights)",est:1000,act:0},
+  {id:6,cat:"🚆 Transport",item:"Suica IC card + top-ups",est:150,act:0},
+  {id:7,cat:"🚗 Car Rental",item:"Car rental Osaka → Kochi",est:500,act:0},
+  {id:8,cat:"🚗 Car Rental",item:"Expressway tolls (ETC)",est:150,act:0},
+  {id:9,cat:"🚆 Transport",item:"Narita Express (N'EX) x2",est:80,act:0},
+  {id:10,cat:"🍜 Food",item:"Meals & snacks (16 days)",est:800,act:0},
+  {id:11,cat:"🎌 Sightseeing",item:"Entry fees & tours",est:400,act:0},
+  {id:12,cat:"🎌 Sightseeing",item:"Rafting + canyoning + paddleboarding",est:400,act:0},
+  {id:13,cat:"🛍️ Shopping",item:"Souvenirs & shopping",est:1000,act:0},
+  {id:14,cat:"🔌 Electronics",item:"Pocket WiFi / SIM card",est:80,act:0},
+];
+
+let packing=[
+  {id:1,cat:"📄 Documents",item:"Passport",done:false},
+  {id:2,cat:"📄 Documents",item:"ANA booking ref: DAZ49R (printed)",done:false},
+  {id:3,cat:"📄 Documents",item:"Travel insurance",done:false},
+  {id:4,cat:"📄 Documents",item:"Hotel booking printouts",done:false},
+  {id:5,cat:"📄 Documents",item:"International driving permit",done:false},
+  {id:6,cat:"🔌 Electronics",item:"Power adapter (Type A — Japan)",done:false},
+  {id:7,cat:"🔌 Electronics",item:"Portable charger",done:false},
+  {id:8,cat:"🔌 Electronics",item:"Phone + charger",done:false},
+  {id:9,cat:"🔌 Electronics",item:"Pocket WiFi / SIM card",done:false},
+  {id:10,cat:"👕 Clothing",item:"Autumn layers (10–18°C)",done:false},
+  {id:11,cat:"👕 Clothing",item:"Comfortable walking shoes (broken in!)",done:false},
+  {id:12,cat:"👕 Clothing",item:"Light jacket / raincoat",done:false},
+  {id:13,cat:"👕 Clothing",item:"Quick-dry clothes for water activities",done:false},
+  {id:14,cat:"👕 Clothing",item:"Water shoes / sandals for rafting",done:false},
+  {id:15,cat:"👕 Clothing",item:"Warm layer for Kochi mountains (night)",done:false},
+  {id:16,cat:"💊 Health",item:"Personal medications",done:false},
+  {id:17,cat:"💊 Health",item:"Motion sickness tabs (winding mountain roads)",done:false},
+  {id:18,cat:"💊 Health",item:"Sunscreen & lip balm",done:false},
+  {id:19,cat:"💰 Misc",item:"Japanese yen cash (¥50,000+ recommended)",done:false},
+  {id:20,cat:"💰 Misc",item:"Suica IC card",done:false},
+  {id:21,cat:"💰 Misc",item:"Small daypack / dry bag for water activities",done:false},
+  {id:22,cat:"💰 Misc",item:"Waterproof phone case (rafting + canyoning)",done:false},
+];
+
+let currency="SGD",tipFilter="All",mapFilter="All",codeFilter="All";
+
+// ── HELPERS ──────────────────────────────────────────────────
+const cc=c=>(c||"").toLowerCase();
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const load=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}};
+function showStatus(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;setTimeout(()=>el.textContent="",2500);}}
+
+// ── TABS ─────────────────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+  ({flights:renderFlights,hotels:renderHotels,itinerary:renderItinerary,map:renderMap,codes:renderCodes,tips:renderTips,expenses:renderExpenses,packing:renderPacking})[name]();
+}
+
+// ── FLIGHTS ──────────────────────────────────────────────────
+function renderFlights(){
+  document.getElementById('tab-flights').innerHTML=
+    `<p style="font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:8px">ANA Reservation · DAZ49R</p>`+
+    FLIGHTS.map(f=>`<div class="flight-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div><span class="flight-num">${f.flight}</span><span class="confirmed">Confirmed</span></div>
+        <span style="font-size:11px;color:#9ca3af">${f.date}</span>
+      </div>
+      <div style="font-weight:600;font-size:13px;margin-bottom:6px">${f.route}</div>
+      <div class="times">
+        <div class="time-block"><div class="time-label">DEP</div><div class="time-val">${f.dep}</div></div>
+        <div style="font-size:20px;color:#d1d5db;margin-top:12px">→</div>
+        <div class="time-block"><div class="time-label">ARR</div><div class="time-val">${f.arr}</div></div>
+      </div>
+      <div class="note-box">${f.cls} · ${f.note}</div>
+    </div>`).join('')+
+    `<div class="warn">⚠️ <strong>Terminal reminder:</strong> Always check terminal assignments on your departure date.</div>`;
+}
+
+// ── HOTELS ───────────────────────────────────────────────────
+function renderHotels(){
+  document.getElementById('tab-hotels').innerHTML=
+    `<p style="font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:8px">Tap to fill in details when booked</p>`+
+    hotels.map(h=>`<div class="card ${cc(h.city)}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span class="badge ${cc(h.city)}">${h.city}</span>
+        <span style="font-size:12px;color:#6b7280">${h.checkin} → ${h.checkout}</span>
+      </div>
+      <div class="hotel-input-group"><label>Hotel name</label>
+        <input value="${h.name}" placeholder="Enter hotel name" oninput="updateHotel('${h.id}','name',this.value)"/></div>
+      <div class="hotel-input-group"><label>Booking reference</label>
+        <input value="${h.ref}" placeholder="Confirmation number" oninput="updateHotel('${h.id}','ref',this.value)"/></div>
+      <div class="note-box">${h.note}</div>
+    </div>`).join('')+
+    `<div class="save-row">
+      <button class="btn btn-red" style="flex:1" onclick="saveHotels()">💾 Save Hotels</button>
+      <button class="btn btn-white" style="flex:1" onclick="loadHotels()">📂 Load Saved</button>
+    </div><div class="save-status" id="hotel-status"></div>`;
+}
+function updateHotel(id,f,v){const h=hotels.find(h=>String(h.id)===String(id));if(h)h[f]=v;}
+function saveHotels(){save('hotels',hotels);showStatus('hotel-status','✅ Saved!');}
+function loadHotels(){const d=load('hotels');if(d){hotels=d;renderHotels();showStatus('hotel-status','📂 Loaded!');}else showStatus('hotel-status','No saved data');}
+
+// ── ITINERARY ────────────────────────────────────────────────
+function renderItinerary(){
+  const d=days[selectedDay],c=cc(d.city);
+  document.getElementById('tab-itinerary').innerHTML=`
+  <div class="itinerary-layout">
+    <div class="day-list">${days.map((day,i)=>`
+      <button class="day-btn ${i===selectedDay?'active '+cc(day.city):''}" onclick="selectDay(${i})">
+        <div class="day-name">${day.dow}, ${day.date}</div>
+        <div class="day-city">${day.city||'—'}</div>
+      </button>`).join('')}
+    </div>
+    <div style="flex:1">
+      <div class="detail-card ${c}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-weight:700;font-size:16px">${d.dow}, ${d.date}</div>
+            <div style="font-size:12px;color:#6b7280">Day ${selectedDay+1} of 16</div>
+          </div>
+          <select onchange="updateDayCity(${selectedDay},this.value)" style="font-size:12px;font-weight:600;border-radius:8px;padding:4px 8px">
+            <option value="">— No city —</option>
+            ${['Osaka','Kobe','Kochi','Tokyo'].map(ct=>`<option ${d.city===ct?'selected':''}>${ct}</option>`).join('')}
+          </select>
+        </div>
+        <div class="section-label">Activities</div>
+        <div>${d.activities.length===0?'<p style="font-size:11px;color:#9ca3af;font-style:italic">Nothing planned yet.</p>':
+          d.activities.map((a,ai)=>`<div class="activity-row">
+            <div class="move-btns">
+              <button class="move-btn" onclick="moveAct(${ai},-1)" ${ai===0?'disabled':''}>▲</button>
+              <button class="move-btn" onclick="moveAct(${ai},1)" ${ai===d.activities.length-1?'disabled':''}>▼</button>
+            </div>
+            <span style="flex:1">${a}</span>
+            <button class="del-btn" onclick="removeAct(${ai})">✕</button>
+          </div>`).join('')}
+        </div>
+        <div class="input-row">
+          <input id="new-act" placeholder="Add an activity…" onkeydown="if(event.key==='Enter')addAct()"/>
+          <button class="btn btn-red" style="flex-shrink:0" onclick="addAct()">+</button>
+        </div>
+        <div class="section-label" style="margin-top:12px">Notes</div>
+        <textarea rows="3" placeholder="Hotel name, booking refs, tips…" oninput="updateDayNotes(${selectedDay},this.value)">${d.notes}</textarea>
+        <div class="save-row">
+          <button class="btn btn-red" style="flex:1" onclick="saveItinerary()">💾 Save Itinerary</button>
+          <button class="btn btn-white" style="flex:1" onclick="loadItinerary()">📂 Load Saved</button>
+        </div>
+        <div class="save-status" id="itin-status"></div>
+      </div>
+    </div>
+  </div>`;
+}
+function selectDay(i){selectedDay=i;renderItinerary();}
+function updateDayCity(i,v){days[i].city=v;renderItinerary();}
+function updateDayNotes(i,v){days[i].notes=v;}
+function addAct(){const inp=document.getElementById('new-act'),v=inp.value.trim();if(!v)return;days[selectedDay].activities.push(v);inp.value='';renderItinerary();}
+function removeAct(ai){days[selectedDay].activities.splice(ai,1);renderItinerary();}
+function moveAct(ai,dir){const a=days[selectedDay].activities,to=ai+dir;if(to<0||to>=a.length)return;[a[ai],a[to]]=[a[to],a[ai]];renderItinerary();}
+function saveItinerary(){save('itinerary',days);showStatus('itin-status','✅ Saved!');}
+function loadItinerary(){const d=load('itinerary');if(d){days=d;renderItinerary();showStatus('itin-status','📂 Loaded!');}else showStatus('itin-status','No saved data');}
+
+// ── MAP ───────────────────────────────────────────────────────
+function renderMap(){
+  const fl=mapFilter==='All'?MAP_LOCS:MAP_LOCS.filter(l=>l.city===mapFilter);
+  document.getElementById('tab-map').innerHTML=
+    `<div class="info">📍 Tap <strong>Open in Maps</strong> to view · <strong>Directions</strong> for turn-by-turn navigation.</div>
+    <div class="filter-row">${['All','Osaka','Kobe','Kochi','Tokyo'].map(c=>`
+      <button class="filter-btn ${mapFilter===c?'active':''}" onclick="setMapFilter('${c}')">${c}</button>`).join('')}
+    </div>`+
+    fl.map(l=>`<div class="card ${cc(l.city)}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <span class="badge ${cc(l.city)}">${l.city}</span>
+        <span style="font-weight:700;font-size:13px">${l.name}</span>
+      </div>
+      ${l.note?`<div style="font-size:11px;color:#6b7280;margin-bottom:8px">💬 ${l.note}</div>`:''}
+      <div style="display:flex;gap:8px">
+        <a href="https://www.google.com/maps/search/?api=1&query=${l.lat},${l.lng}" target="_blank" class="btn-sm btn-maps">🗺️ Open in Maps</a>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${l.lat},${l.lng}" target="_blank" class="btn-sm btn-dir">🧭 Directions</a>
+      </div>
+    </div>`).join('');
+}
+function setMapFilter(c){mapFilter=c;renderMap();}
+
+// ── MAP CODES ─────────────────────────────────────────────────
+function renderCodes(){
+  const fl=codeFilter==='All'?mapcodes:mapcodes.filter(m=>m.city===codeFilter);
+  document.getElementById('tab-codes').innerHTML=
+    `<div class="info">🗺️ Enter into car rental GPS or tap <strong>Search →</strong> on <a href="https://japanmapcode.com/en" target="_blank" style="font-weight:700">japanmapcode.com</a></div>
+    <div class="filter-row">${['All','Osaka','Kobe','Kochi','Tokyo'].map(c=>`
+      <button class="filter-btn ${codeFilter===c?'active':''}" onclick="setCodeFilter('${c}')">${c}</button>`).join('')}
+    </div>`+
+    fl.map(m=>`<div class="card ${cc(m.city)}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span class="badge ${cc(m.city)}">${m.city}</span>
+            <span style="font-weight:700;font-size:13px">${m.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+            <span class="mapcode-val">${m.code}</span>
+            <button class="btn-sm btn-maps" onclick="navigator.clipboard.writeText('${m.code}')">Copy</button>
+            <a href="https://japanmapcode.com/en#${m.code.replace(/\s/g,'')}" target="_blank" class="btn-sm btn-dir">Search →</a>
+          </div>
+          ${m.notes?`<div style="font-size:11px;color:#6b7280">💬 ${m.notes}</div>`:''}
+        </div>
+        <button onclick="removeCode(${m.id})" style="color:#f87171;background:none;border:none;cursor:pointer;font-size:13px;margin-left:8px">✕</button>
+      </div>
+    </div>`).join('')+
+    `<div class="card"><div class="section-label">Add a map code</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="nc-name" placeholder="Place name"/>
+        <input id="nc-code" placeholder="Map code (e.g. 123 456 789)" style="font-family:monospace"/>
+        <select id="nc-city">${['Osaka','Kobe','Kochi','Tokyo'].map(c=>`<option>${c}</option>`).join('')}</select>
+        <input id="nc-notes" placeholder="Notes (optional)"/>
+        <button class="btn btn-red" onclick="addCode()">Add Map Code</button>
+      </div>
+    </div>`;
+}
+function setCodeFilter(c){codeFilter=c;renderCodes();}
+function removeCode(id){mapcodes=mapcodes.filter(m=>m.id!==id);renderCodes();}
+function addCode(){
+  const name=document.getElementById('nc-name').value.trim(),code=document.getElementById('nc-code').value.trim();
+  if(!name||!code)return;
+  mapcodes.push({id:Date.now(),name,code,city:document.getElementById('nc-city').value,notes:document.getElementById('nc-notes').value});
+  renderCodes();
+}
+
+// ── TIPS ─────────────────────────────────────────────────────
+function renderTips(){
+  const fl=tipFilter==='All'?TIPS:TIPS.filter(t=>t.city===tipFilter);
+  document.getElementById('tab-tips').innerHTML=
+    `<div class="filter-row">${['All','General','Osaka','Kobe','Kochi','Tokyo'].map(c=>`
+      <button class="filter-btn ${tipFilter===c?'active':''}" onclick="setTipFilter('${c}')">${c}</button>`).join('')}
+    </div>`+
+    fl.map(t=>`<div class="card" style="display:flex;gap:12px">
+      <span style="font-size:20px;flex-shrink:0">${t.icon}</span>
+      <div><div style="font-size:10px;font-weight:700;color:#9ca3af;margin-bottom:2px">${t.city}</div>
+      <div style="font-size:13px">${t.tip}</div></div>
+    </div>`).join('');
+}
+function setTipFilter(c){tipFilter=c;renderTips();}
+
+// ── EXPENSES ─────────────────────────────────────────────────
+function renderExpenses(){
+  const est=budget.reduce((s,b)=>s+Number(b.est||0),0);
+  const act=budget.reduce((s,b)=>s+Number(b.act||0),0);
+  const rem=est-act;
+  document.getElementById('tab-expenses').innerHTML=
+    `<div class="summary-row">
+      <div class="summary-card"><div class="s-label">Estimated</div><div class="s-val" style="color:#3b82f6">${currency} ${est.toLocaleString()}</div></div>
+      <div class="summary-card"><div class="s-label">Spent</div><div class="s-val" style="color:${act>est?'#dc2626':'#16a34a'}">${currency} ${act.toLocaleString()}</div></div>
+      <div class="summary-card"><div class="s-label">Remaining</div><div class="s-val" style="color:${rem<0?'#dc2626':'#111'}">${currency} ${rem.toLocaleString()}</div></div>
+    </div>
+    <div class="filter-row">${['SGD','JPY','USD'].map(c=>`
+      <button class="filter-btn ${currency===c?'active':''}" onclick="setCurrency('${c}')">${c}</button>`).join('')}
+    </div>
+    <div class="budget-table">
+      <div class="budget-header"><div>Item</div><div style="text-align:right">Est.</div><div style="text-align:right">Actual</div><div></div></div>
+      ${budget.map(b=>`<div class="budget-row">
+        <div><div style="font-size:10px;color:#9ca3af">${b.cat}</div><div style="font-size:11px;font-weight:500">${b.item}</div></div>
+        <div><input type="number" value="${b.est}" oninput="updateBudget(${b.id},'est',this.value)"/></div>
+        <div><input type="number" value="${b.act}" oninput="updateBudget(${b.id},'act',this.value)"/></div>
+        <div style="text-align:center"><button onclick="removeBudget(${b.id})" style="color:#f87171;background:none;border:none;cursor:pointer">✕</button></div>
+      </div>`).join('')}
+    </div>
+    <div class="card"><div class="section-label">Add expense</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="b-item" placeholder="Item description"/>
+        <input id="b-cat" placeholder="Category (e.g. 🍜 Food)"/>
+        <div style="display:flex;gap:8px">
+          <input id="b-est" type="number" placeholder="Estimated" style="flex:1"/>
+          <input id="b-act" type="number" placeholder="Actual" style="flex:1"/>
+        </div>
+        <button class="btn btn-red" onclick="addBudget()">Add Item</button>
+      </div>
+    </div>`;
+}
+function setCurrency(c){currency=c;renderExpenses();}
+function updateBudget(id,f,v){const b=budget.find(b=>b.id===id);if(b)b[f]=Number(v)||0;renderExpenses();}
+function removeBudget(id){budget=budget.filter(b=>b.id!==id);renderExpenses();}
+function addBudget(){
+  const item=document.getElementById('b-item').value.trim();if(!item)return;
+  budget.push({id:Date.now(),cat:document.getElementById('b-cat').value||'💰 Misc',item,est:Number(document.getElementById('b-est').value)||0,act:Number(document.getElementById('b-act').value)||0});
+  renderExpenses();
+}
+
+// ── PACKING ───────────────────────────────────────────────────
+function renderPacking(){
+  const done=packing.filter(p=>p.done).length,pct=packing.length?Math.round(done/packing.length*100):0;
+  const cats=[...new Set(packing.map(p=>p.cat))];
+  document.getElementById('tab-packing').innerHTML=
+    `<div class="card">
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:6px">
+        <span>Packing progress</span><span style="color:#dc2626">${done} / ${packing.length}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      ${done===packing.length&&packing.length>0?'<div style="text-align:center;color:#16a34a;font-weight:700;font-size:13px;margin-top:6px">✅ All packed! Enjoy Japan!</div>':''}
+    </div>`+
+    cats.map(cat=>`<div class="pack-group">
+      <div class="pack-header">${cat}</div>
+      ${packing.filter(p=>p.cat===cat).map(p=>`<div class="pack-row">
+        <input type="checkbox" ${p.done?'checked':''} onchange="togglePack(${p.id})"/>
+        <span class="pack-label ${p.done?'done':''}">${p.item}</span>
+        <button onclick="removePack(${p.id})" style="color:#f87171;background:none;border:none;cursor:pointer;font-size:12px">✕</button>
+      </div>`).join('')}
+    </div>`).join('')+
+    `<div class="card"><div class="section-label">Add item</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="p-item" placeholder="What to pack?" onkeydown="if(event.key==='Enter')addPack()"/>
+        <input id="p-cat" placeholder="Category (e.g. 👕 Clothing)"/>
+        <button class="btn btn-red" onclick="addPack()">Add Item</button>
+      </div>
+    </div>`;
+}
+function togglePack(id){const p=packing.find(p=>p.id===id);if(p)p.done=!p.done;renderPacking();}
+function removePack(id){packing=packing.filter(p=>p.id!==id);renderPacking();}
+function addPack(){
+  const item=document.getElementById('p-item').value.trim();if(!item)return;
+  packing.push({id:Date.now(),cat:document.getElementById('p-cat').value||'💰 Misc',item,done:false});
+  renderPacking();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+renderFlights();
+</script>
+</body>
+</html>
